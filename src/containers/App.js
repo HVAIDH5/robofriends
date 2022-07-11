@@ -1,4 +1,4 @@
-import React,{ Component } from 'react';
+import React,{ useState,useEffect } from 'react';
 
 import CardList from '../components/CardList';
 
@@ -9,30 +9,40 @@ import ErrorBoundary from '../components/ErrorBoundary';
 
 
 
-class App extends Component {
-    constructor(){
-       super()
-        this.state= {
-            robots:[],
-            searchfield:''
-        }
-       }
-   
-       componentDidMount() {
-           fetch('https://jsonplaceholder.typicode.com/users').then(response=>response.json()).then(users=>this.setState({robots:users}));
-           
-       }
+function App() {
 
- onSearchChange = (event) => {
+    // constructor(){
+    //    super()
+    //     this.state= {
+    //         robots:[],
+    //         searchfield:''
+    //     }
+    //    }
+   const [robots, setrobots]= useState([]);
+   const [searchfield, setsearchfield]= useState('');
+   
+    //    componentDidMount() {
+    //        fetch('https://jsonplaceholder.typicode.com/users').then(response=>response.json()).then(users=>this.setState({robots:users}));
+           
+    //    }
+
+    useEffect(()=>{
+        fetch('https://jsonplaceholder.typicode.com/users')
+        .then(response=>response.json())
+         .then(users=>setrobots(users));
+      
+    },[])
+
+ const onSearchChange = (event) => {
     // console.log(event.target.value);
-     this.setState({searchfield: event.target.value })
+     setsearchfield(event.target.value)
  }
 
-    render(){
-        const filteredRobots=this.state.robots.filter(robot=> {
-            return robot.name.toLowerCase().includes(this.state.searchfield.toLowerCase())
+   
+        const filteredRobots=robots.filter(robot=> {
+            return robot.name.toLowerCase().includes(searchfield.toLowerCase())
         })
-  if (this.state.robots.length === 0){
+  if (robots.length === 0){
       return <h1>Loading</h1>
 }  
 else
@@ -40,9 +50,10 @@ else
     return (
         <div className="tc">
             <h1>Robo friends</h1>
-            <SearchBox searchChange={this.onSearchChange} />
+            <SearchBox searchChange={onSearchChange} />
             <Scroll>  
                 <ErrorBoundary>
+                    
         <CardList robots={filteredRobots}/>
         </ErrorBoundary>
         </Scroll>
@@ -52,7 +63,7 @@ else
 }
 
     
-}
+
     }
 
    
